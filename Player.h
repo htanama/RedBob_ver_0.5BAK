@@ -202,7 +202,7 @@ class Player
 
         inline void Sprint()
         {            
-            mVelocityX = 500;                       
+            mVelocityX = 400; // Original 500.0                  
         }
         
         inline void setOriginalVelocityX()
