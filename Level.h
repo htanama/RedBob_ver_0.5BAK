@@ -70,8 +70,10 @@ public:
 
 	~Level()
 	{
-		if (mTexture != nullptr)
+		if (mTexture != NULL)
+		{
 			SDL_DestroyTexture(mTexture);
+		}
 	}
 	
 	void LoadFromFile(int &mapWidth, int &mapHeight)
