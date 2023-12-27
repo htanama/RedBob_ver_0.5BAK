@@ -92,7 +92,7 @@ public:
 
 	~Object()
 	{
-		if (mTexture != nullptr)
+		if (mTexture != NULL)
 		{
 			SDL_DestroyTexture(mTexture);
 		}
