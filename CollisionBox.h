@@ -22,7 +22,6 @@ public:
 	
 	~CollisionBox()
 	{
-
 	}
 	
 	// Copy constructor
@@ -263,12 +262,24 @@ public:
 				if (!object->getIsObjectCollected()) {
 					Mix_PlayChannel(-1, CollectSound, 0);
 					object->setIsObjectCollected(true);
-					Game::tmpTotalScore++;
-					//delete object;
-					//object = nullptr;
+					Game::tmpTotalScore++;					
 				}
 			}
 		}
+	}
+
+	void CollisionCheck_PlayerAndTile_NoJump(CollisionBox& HitBox, Level* LevelMap, int Row, int Col)
+	{
+		// Player has no ability to jump
+		if (mCollisionBox.x < HitBox.getPosX() + HitBox.getWidth() &&
+			mCollisionBox.x + mCollisionBox.w > HitBox.getPosX() &&
+			(mCollisionBox.y + mCollisionBox.h) < HitBox.getPosY() + HitBox.getHeight() &&
+			(mCollisionBox.y + mCollisionBox.h) + mCollisionBox.h > HitBox.getPosY())
+		{
+			Game::isJumpKeyPressed = true;
+			printf("No Jump\n");
+		}		
+
 	}
 
 	// player collision with the above tile, block jump because of obsticle above.
@@ -293,7 +304,6 @@ public:
 		{
 			Game::is_Collided_With_Object = false;
 		}
-
 	}
 
 	void CollisionCheck_PlayerAndTile_StopFreeFall(CollisionBox& HitBox, Level* LevelMap, int Row, int Col)
