@@ -86,6 +86,26 @@ public:
                 }
             }                                    
             
+            if (e.type == SDL_KEYUP)
+            {
+                switch (e.key.keysym.sym)
+                {
+                case SDLK_LEFT:
+                    Game::isLeftKeyPressed = false;
+                    break;
+                case SDLK_RIGHT:
+                    Game::isRightKeyPressed = false;
+                case SDLK_SPACE:
+                    Game::isJumpKeyPressed = false;
+                    break;
+                case SDLK_z:
+                    Game::isSprintPressed = false;
+                    player->setOriginalVelocityX(); // set velocity to original velocity, after sprinting
+                    break;
+
+                }
+            }
+
             if (e.type == SDL_KEYDOWN) 
             {
                 switch (e.key.keysym.sym)
@@ -112,25 +132,7 @@ public:
                 }
             }
 
-            if (e.type == SDL_KEYUP)
-            {         
-                switch (e.key.keysym.sym)
-                {
-                case SDLK_LEFT:
-					Game::isLeftKeyPressed = false;					
-					break;
-                case SDLK_RIGHT:
-                    Game::isRightKeyPressed = false;
-                case SDLK_SPACE:
-                    Game::isJumpKeyPressed = false;                    
-                    break;               
-                case SDLK_z:                    
-                    Game::isSprintPressed = false;
-                    player->setOriginalVelocityX(); // set velocity to original velocity, after sprinting
-                    break;
 
-                }
-            }
 
     }
     ~Keyboard() {
