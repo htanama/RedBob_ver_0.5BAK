@@ -48,7 +48,7 @@ Level* LevelMap = nullptr;
 Enemy* Spider1 = nullptr;
 Object* movingFloor = nullptr, *coin17 = nullptr, * coin44 = nullptr, * coin47 = nullptr, * coin71 = nullptr, * coin410 = nullptr, * coin515 = nullptr;
 
-Object *mushroom = nullptr, *greenMushroom = nullptr;
+Object *mushroom = nullptr, *greenMushroom = nullptr, *redMushroom = nullptr, *mushroomGreen = nullptr;
 Object* star = nullptr;
 TTF_Font* font = NULL;
 SDL_Surface* text = NULL;
@@ -56,8 +56,8 @@ ScoreSystem* playerScore = nullptr;
 DebugGUI myDebugGUI; // ImGUI Debug
 
 CollisionBox PlayerCollisionBox, MovingFloorCollisionBox, SpiderCollisionBox, Coin17_CollisionBox, Coin44_CollisionBox, Coin47_CollisionBox, Coin71_CollisionBox, Coin410_CollisionBox, Coin515_CollisionBox;
-CollisionBox TileCollisionBox27, TileCollisionBox27Bottom, TileCollisionBox39, TileCollisionBox39Left, TileCollisionBox47, TileCollisionBox48, TileCollisionBox48Left, TileCollisionBox49, TileCollisionBox54, TileCollisionBox54Bottom, TileCollisionBox55, TileCollisionBox57, TileCollisionBox57Left, TileCollisionBox59, TileCollisionBox64, TileCollisionBox65, TileCollisionBox66, TileCollisionBox66Left, TileCollisionBox68,TileCollisionBox69, TileCollisionBox70, TileCollisionBox73, TileCollisionBox74, TileCollisionBox75, TileCollisionBox76, TileCollisionBox77, TileCollisionBox78, TileCollisionBox79, TileCollisionBox84,
-TileCollisionBox86, TileCollisionBox87, TileCollisionBox88,TileCollisionBox89, TileCollisionBox210, TileCollisionBox210Left, TileCollisionBox211, TileCollisionBox216, TileCollisionBox311, TileCollisionBox411, TileCollisionBox414, TileCollisionBox416, TileCollisionBox417, TileCollisionBox418, TileCollisionBox511, TileCollisionBox510, TileCollisionBox515, TileCollisionBox516, TileCollisionBox517, TileCollisionBox611, TileCollisionBox615, TileCollisionBox616,TileCollisionBox617, TileCollisionBox710, TileCollisionBox711, TileCollisionBox714, TileCollisionBox715, TileCollisionBox716, TileCollisionBox717, TileCollisionBox717Left, TileCollisionBox717Right, TileCollisionBox718, TileCollisionBox810,TileCollisionBox811, TileCollisionBox812, TileCollisionBox813, TileCollisionBox814;
+CollisionBox TileCollisionBox27, TileCollisionBox27Bottom, TileCollisionBox39, TileCollisionBox39Left, TileCollisionBox39Bottom, TileCollisionBox47, TileCollisionBox48, TileCollisionBox48Left, TileCollisionBox49, TileCollisionBox54, TileCollisionBox54Bottom, TileCollisionBox55, TileCollisionBox55Bottom, TileCollisionBox57, TileCollisionBox57Bottom, TileCollisionBox57Left, TileCollisionBox59, TileCollisionBox64, TileCollisionBox65, TileCollisionBox66, TileCollisionBox66Left, TileCollisionBox68,TileCollisionBox69, TileCollisionBox70, TileCollisionBox73, TileCollisionBox74, TileCollisionBox75, TileCollisionBox76, TileCollisionBox77, TileCollisionBox78, TileCollisionBox79, TileCollisionBox84,
+TileCollisionBox86, TileCollisionBox87, TileCollisionBox88,TileCollisionBox89, TileCollisionBox210, TileCollisionBox210Left, TileCollisionBox211, TileCollisionBox216, TileCollisionBox216Bottom, TileCollisionBox311, TileCollisionBox411, TileCollisionBox414, TileCollisionBox416, TileCollisionBox417, TileCollisionBox418, TileCollisionBox511, TileCollisionBox510, TileCollisionBox510Bottom, TileCollisionBox515, TileCollisionBox516, TileCollisionBox516Bottom, TileCollisionBox517, TileCollisionBox611, TileCollisionBox615, TileCollisionBox616,TileCollisionBox617, TileCollisionBox710, TileCollisionBox711, TileCollisionBox714, TileCollisionBox715, TileCollisionBox716, TileCollisionBox717, TileCollisionBox717Left, TileCollisionBox717Right, TileCollisionBox718, TileCollisionBox724, TileCollisionBox810,TileCollisionBox811, TileCollisionBox812, TileCollisionBox813, TileCollisionBox814;
 
 Game::Game() {mGameIsRunning = true;}
 Game::~Game() {
@@ -99,7 +99,7 @@ void Game::init()
 	Mix_OpenAudio(48000, AUDIO_S16SYS, 2, 2048);
 	Game_Music = Mix_LoadMUS("assets/GroundTheme.mp3");	
 	mGameIsRunning = true;
-	Mix_PlayMusic(Game_Music, 0);
+	//Mix_PlayMusic(Game_Music, 0);
 	JumpSound = Mix_LoadWAV("assets/smb_jump-small.wav");
 	if (JumpSound == NULL) {
 		printf("\033[1;31m Unable to load ogg file: %s\n", Mix_GetError());
@@ -107,10 +107,13 @@ void Game::init()
 	}
 	coinCollectSound = Mix_LoadWAV("assets/smb_coin.wav");
 	if (coinCollectSound == NULL) {
-		printf("\033[1;31m Unable to load ogg file: %s\n", Mix_GetError());
+		printf("\033[1;31m Unable to load wav file: %s\n", Mix_GetError());
 		printf("\x1B[0m"); // reset back to normal - all atributes off
 	}
-	
+	BumpSound = Mix_LoadWAV("assets/smb_bump.wav");
+	if (BumpSound == NULL) {
+		printf("\033[1;31m Unable to load wav file: %s\n\x1B[0m", Mix_GetError());
+	}
 
 	if (TTF_Init() < 0)
 	{
@@ -182,7 +185,8 @@ void Game::SetupLevel1(){
 	coin515 = new Object(glm::vec2(740, 250), glm::vec2(2.0, 2.0), "assets/coins2.png", 16, 16, 0, 0, 4, true);
 	mushroom = new Object(glm::vec2(0, 0), glm::vec2(3.0, 3.0), "assets/Object-Items.png", 16, 16, 0, 0);
 	greenMushroom = new Object(glm::vec2(0, 0), glm::vec2(3.0, 3.0), "assets/Object-Items.png", 16, 16, 1, 0);
-
+	redMushroom = new Object(glm::vec2(0, 0), glm::vec2(3.0, 3.0), "assets/Object-Items.png", 16, 16, 0, 0);
+	mushroomGreen = new Object(glm::vec2(0, 0), glm::vec2(3.0, 3.0), "assets/Object-Items.png", 16, 16, 1, 0);
 	backgroundRect = { 0,0, SCREEN_WIDTH, SCREEN_HEIGHT };
 
 	font = TTF_OpenFont("assets/ariblk.ttf", 20);
@@ -200,6 +204,10 @@ void Game::SetupLevel2()
 	LevelMap = new Level(16, "assets/OverWorld.png", mapWidth, mapHeight);
 	Spider1 = new Enemy(glm::vec2(340.0, 355.0), glm::vec2(2.0, 2.0), "assets/spider-sprites-left.png", 32, 16, 0, 0, 3);
 	Spider1->setTextureWalkRight("assets/spider-sprites-right.png", 32, 16, 0, 0);
+	coin515 = new Object(glm::vec2(720, 210), glm::vec2(2.0, 2.0), "assets/coins2.png", 16, 16, 0, 0, 4, true);
+	mushroom = new Object(glm::vec2(0, 0), glm::vec2(3.0, 3.0), "assets/Object-Items.png", 16, 16, 0, 0);
+	greenMushroom = new Object(glm::vec2(0, 0), glm::vec2(3.0, 3.0), "assets/Object-Items.png", 16, 16, 1, 0);
+	redMushroom = new Object(glm::vec2(0, 0), glm::vec2(3.0, 3.0), "assets/Object-Items.png", 16, 16, 0, 0);
 
 	//movingFloor at tile dstRect[8][8]
 	movingFloor = new Object(glm::vec2(400, 380), glm::vec2(3.0, 3.0), "assets/Platform.png", 48, 16, 0, 0);
@@ -221,7 +229,8 @@ void Game::SetupLevel3()
 	LevelMap = new Level(16, "assets/OverWorld.png", mapWidth, mapHeight);
 	Spider1 = new Enemy(glm::vec2(800.0, 355.0), glm::vec2(2.0, 2.0), "assets/spider-sprites-left.png", 32, 16, 0, 0, 3);
 	Spider1->setTextureWalkRight("assets/spider-sprites-right.png", 32, 16, 0, 0);
-
+	redMushroom = new Object(glm::vec2(0, 0), glm::vec2(3.0, 3.0), "assets/Object-Items.png", 16, 16, 0, 0);
+	mushroomGreen = new Object(glm::vec2(0, 0), glm::vec2(3.0, 3.0), "assets/Object-Items.png", 16, 16, 1, 0);
 	//movingFloor at tile dstRect[4][12]
 	movingFloor = new Object(glm::vec2(500, 200), glm::vec2(3.0, 3.0), "assets/Platform.png", 48, 16, 0, 0);
 	movingFloor->setVelocityX(50.0);
@@ -315,24 +324,33 @@ void Game::Setup_LevelOneCollision()
 	}
 	TileCollisionBox27.Init_CollisionBox_With_LevelMap(LevelMap, 2, 7); // block location
 
-	TileCollisionBox27Bottom.Init_CollisionBox_With_LevelMap_And_OffsetX_And_OffsetY(LevelMap, 2, 7, 5, 17);
+	TileCollisionBox27Bottom.Init_CollisionBox_With_LevelMap_And_OffsetX_And_OffsetY(LevelMap, 2, 7, 5, 20);
 	TileCollisionBox27Bottom.setHeight(TileCollisionBox27Bottom.getHeight() / 1.3);
 	TileCollisionBox27Bottom.setWidth(TileCollisionBox27Bottom.getWidth() / 1.3);
 
 	TileCollisionBox47.Init_CollisionBox_With_LevelMap(LevelMap, 4, 7); // restrict jump	
 	TileCollisionBox54.Init_CollisionBox_With_LevelMap(LevelMap, 5, 4); // block location. 	
 
-	TileCollisionBox54Bottom.Init_CollisionBox_With_LevelMap_And_OffsetX_And_OffsetY(LevelMap, 5, 4, 5, 17);
+	TileCollisionBox54Bottom.Init_CollisionBox_With_LevelMap_And_OffsetX_And_OffsetY(LevelMap, 5, 4, 5, 20);
 	TileCollisionBox54Bottom.setHeight(TileCollisionBox54Bottom.getHeight() / 1.3);
 	TileCollisionBox54Bottom.setWidth(TileCollisionBox54Bottom.getWidth() / 1.3);
 
 	TileCollisionBox57.Init_CollisionBox_With_LevelMap(LevelMap, 5, 7);
+	TileCollisionBox57Bottom.Init_CollisionBox_With_LevelMap_And_OffsetX_And_OffsetY(LevelMap, 5, 7, 5, 20);
+	TileCollisionBox57Bottom.setHeight(TileCollisionBox57Bottom.getHeight() / 1.3);
+	TileCollisionBox57Bottom.setWidth(TileCollisionBox57Bottom.getWidth() / 1.3);
+
 	TileCollisionBox73.Init_CollisionBox_With_LevelMap_And_OffsetX(LevelMap, 7, 3, -10); // reset jump	
 	TileCollisionBox74.Init_CollisionBox_With_LevelMap(LevelMap, 7, 4); // restrict jump		
 	TileCollisionBox75.Init_CollisionBox_With_LevelMap_And_OffsetX(LevelMap, 7, 5, 40); // reset jump	
 	TileCollisionBox77.Init_CollisionBox_With_LevelMap(LevelMap, 7, 7); // restrict jump
 	TileCollisionBox78.Init_CollisionBox_With_LevelMap_And_OffsetX(LevelMap, 7, 8, 40); // reset jump	
+	
 	TileCollisionBox510.Init_CollisionBox_With_LevelMap(LevelMap, 5, 10); // block location.
+	TileCollisionBox510Bottom.Init_CollisionBox_With_LevelMap_And_OffsetX_And_OffsetY(LevelMap, 5, 10, 5, 20);
+	TileCollisionBox510Bottom.setHeight(TileCollisionBox510Bottom.getHeight() / 1.3);
+	TileCollisionBox510Bottom.setWidth(TileCollisionBox510Bottom.getWidth() / 1.3);
+
 	TileCollisionBox615.Init_CollisionBox_With_LevelMap(LevelMap, 6, 15); 
 	TileCollisionBox616.Init_CollisionBox_With_LevelMap(LevelMap, 6, 16);	
 	TileCollisionBox710.Init_CollisionBox_With_LevelMap(LevelMap, 7, 10); // restrict jump
@@ -347,14 +365,13 @@ void Game::LevelOneCollision()
 	//player collision with block at destRect[2][7]	
 	PlayerCollisionBox.CollisionCheck_PlayerAndTile_PlayerOnTop(TileCollisionBox27, player, LevelMap, 2, 7);
 	PlayerCollisionBox.CollisionCheck_PlayerAndTile_HitBlockForItem(TileCollisionBox27Bottom, player, greenMushroom, LevelMap, BumpSound, 2, 7);
-
 	PlayerCollisionBox.CollisionCheck_PlayerAndTile_JumpRestriction(TileCollisionBox47,LevelMap, 4, 7);
 	PlayerCollisionBox.CollisionCheck_PlayerAndTile_PlayerOnTop(TileCollisionBox54, player, LevelMap, 5, 4);
-
 	PlayerCollisionBox.CollisionCheck_PlayerAndTile_HitBlockForItem(TileCollisionBox54Bottom, player, mushroom, LevelMap, BumpSound, 5, 4);
-
 	PlayerCollisionBox.CollisionCheck_PlayerAndTile_PlayerOnTop(TileCollisionBox57, player, LevelMap, 5, 7);
+	PlayerCollisionBox.CollisionCheck_PlayerAndTile_HitBlockForItem(TileCollisionBox57Bottom, player, redMushroom, LevelMap, BumpSound, 5, 7);
 	PlayerCollisionBox.CollisionCheck_PlayerAndTile_PlayerOnTop(TileCollisionBox510, player, LevelMap, 5, 10);	
+	PlayerCollisionBox.CollisionCheck_PlayerAndTile_HitBlockForItem(TileCollisionBox510Bottom, player, mushroomGreen, LevelMap, BumpSound, 5, 10);
 	PlayerCollisionBox.CollisionCheck_PlayerAndTile_ReleaseJumpRestriction(TileCollisionBox73, LevelMap, 7, 3);
 	PlayerCollisionBox.CollisionCheck_PlayerAndTile_JumpRestriction(TileCollisionBox74, LevelMap, 7, 4);
 	PlayerCollisionBox.CollisionCheck_PlayerAndTile_ReleaseJumpRestriction(TileCollisionBox75, LevelMap, 7, 5);
@@ -398,7 +415,6 @@ void Game::Setup_LevelTwoCollision()
 	if (coin17 != nullptr) {
 		Coin17_CollisionBox.Init_CollisionBox_With_Object(coin17);
 	}
-
 	if (coin44 != nullptr) {
 		Coin44_CollisionBox.Init_CollisionBox_With_Object(coin44);
 	}
@@ -417,6 +433,10 @@ void Game::Setup_LevelTwoCollision()
 	}
 	
 	TileCollisionBox55.Init_CollisionBox_With_LevelMap(LevelMap, 5, 5); // block location	
+	TileCollisionBox55Bottom.Init_CollisionBox_With_LevelMap_And_OffsetX_And_OffsetY(LevelMap, 5, 5, 5, 20);
+	TileCollisionBox55Bottom.setHeight(TileCollisionBox55Bottom.getHeight() / 1.3);
+	TileCollisionBox55Bottom.setWidth(TileCollisionBox55Bottom.getWidth() / 1.3);
+
 	TileCollisionBox74.Init_CollisionBox_With_LevelMap_And_OffsetX(LevelMap, 7, 4, -10); // reset jump
 	TileCollisionBox70.Init_CollisionBox_With_LevelMap(LevelMap, 7, 0); // Stop Player from free falling
 	TileCollisionBox75.Init_CollisionBox_With_LevelMap(LevelMap, 7, 5); // restrict jump	
@@ -427,12 +447,22 @@ void Game::Setup_LevelTwoCollision()
 	TileCollisionBox87.Init_CollisionBox_With_LevelMap(LevelMap, 8, 7);
 	TileCollisionBox88.Init_CollisionBox_With_LevelMap_And_OffsetX(LevelMap, 8, 8, 25);//so player does not fall right away.
 	TileCollisionBox89.Init_CollisionBox_With_LevelMap(LevelMap, 8, 9);
+
 	TileCollisionBox216.Init_CollisionBox_With_LevelMap(LevelMap, 2, 16); 
+	TileCollisionBox216Bottom.Init_CollisionBox_With_LevelMap_And_OffsetX_And_OffsetY(LevelMap, 2, 16, 5, 20);
+	TileCollisionBox216Bottom.setHeight(TileCollisionBox216Bottom.getHeight() / 1.3);
+	TileCollisionBox216Bottom.setWidth(TileCollisionBox216Bottom.getWidth() / 1.3);
+	
 	TileCollisionBox414.Init_CollisionBox_With_LevelMap(LevelMap, 4, 14); 	
 	TileCollisionBox416.Init_CollisionBox_With_LevelMap(LevelMap, 4, 16);
 	TileCollisionBox418.Init_CollisionBox_With_LevelMap(LevelMap, 4, 18);	
 	TileCollisionBox515.Init_CollisionBox_With_LevelMap(LevelMap, 5, 15);
+
 	TileCollisionBox516.Init_CollisionBox_With_LevelMap(LevelMap, 5, 16);
+	TileCollisionBox516Bottom.Init_CollisionBox_With_LevelMap_And_OffsetX_And_OffsetY(LevelMap, 5, 16, 5, 20);
+	TileCollisionBox516Bottom.setHeight(TileCollisionBox516Bottom.getHeight() / 1.3);
+	TileCollisionBox516Bottom.setWidth(TileCollisionBox516Bottom.getWidth() / 1.3);
+
 	TileCollisionBox517.Init_CollisionBox_With_LevelMap(LevelMap, 5, 17);
 	TileCollisionBox617.Init_CollisionBox_With_LevelMap(LevelMap, 6, 17); // restrict jump
 	TileCollisionBox714.Init_CollisionBox_With_LevelMap_And_OffsetX(LevelMap, 7, 14, -10);
@@ -450,6 +480,7 @@ void Game::LevelTwoCollision()
 {
 	Setup_LevelTwoCollision();	
 	PlayerCollisionBox.CollisionCheck_PlayerAndTile_PlayerOnTop(TileCollisionBox55, player, LevelMap, 5, 5);	
+	PlayerCollisionBox.CollisionCheck_PlayerAndTile_HitBlockForItem(TileCollisionBox55Bottom, player, mushroom, LevelMap, BumpSound, 5, 5);
 	PlayerCollisionBox.CollisionCheck_PlayerAndTile_StopFreeFall(TileCollisionBox70, LevelMap, 7, 0);
 	PlayerCollisionBox.CollisionCheck_PlayerAndTile_ReleaseJumpRestriction(TileCollisionBox74, LevelMap, 7, 4);
 	PlayerCollisionBox.CollisionCheck_PlayerAndTile_JumpRestriction(TileCollisionBox75, LevelMap, 7, 5);
@@ -461,12 +492,18 @@ void Game::LevelTwoCollision()
 	PlayerCollisionBox.CollisionCheck_PlayerAndTile_StopFreeFall(TileCollisionBox87, LevelMap, 8, 7);	
 	PlayerCollisionBox.CollisionCheck_PlayerAndTile_FallingDeath(TileCollisionBox88, player, LevelMap, 8, 8);
 	PlayerCollisionBox.CollisionCheck_PlayerAndTile_FallingDeath(TileCollisionBox89, player, LevelMap, 8, 9);
+
 	PlayerCollisionBox.CollisionCheck_PlayerAndTile_PlayerOnTop(TileCollisionBox216, player, LevelMap, 2, 16);
+	PlayerCollisionBox.CollisionCheck_PlayerAndTile_HitBlockForItem(TileCollisionBox216Bottom, player, greenMushroom, LevelMap, BumpSound, 2, 16);
+
 	PlayerCollisionBox.CollisionCheck_PlayerAndTile_ReleaseJumpRestriction(TileCollisionBox414, LevelMap, 4, 14);
 	PlayerCollisionBox.CollisionCheck_PlayerAndTile_JumpRestriction(TileCollisionBox416, LevelMap, 4, 16);
 	PlayerCollisionBox.CollisionCheck_PlayerAndTile_ReleaseJumpRestriction(TileCollisionBox418, LevelMap, 4, 18);
 	PlayerCollisionBox.CollisionCheck_PlayerAndTile_PlayerOnTop(TileCollisionBox515, player, LevelMap, 5, 15);
+
 	PlayerCollisionBox.CollisionCheck_PlayerAndTile_PlayerOnTop(TileCollisionBox516, player, LevelMap, 5, 16);
+	PlayerCollisionBox.CollisionCheck_PlayerAndTile_HitBlockForItem(TileCollisionBox516Bottom, player, redMushroom, LevelMap, BumpSound, 5, 16);
+
 	PlayerCollisionBox.CollisionCheck_PlayerAndTile_PlayerOnTop(TileCollisionBox517, player, LevelMap, 5, 17);	
 	PlayerCollisionBox.CollisionCheck_PlayerAndTile_ReleaseJumpRestriction(TileCollisionBox714, LevelMap, 7, 14);
 	PlayerCollisionBox.CollisionCheck_PlayerAndTile_JumpRestriction(TileCollisionBox715, LevelMap, 7, 15);	
@@ -506,7 +543,12 @@ void Game::Setup_LevelThreeCollision()
 	PlayerCollisionBox.Init_CollisionBox_With_Player(player);	
 	SpiderCollisionBox.Init_CollisionBox_With_Enemy(Spider1);
 	MovingFloorCollisionBox.Init_CollisionBox_With_Object(movingFloor);
+	
 	TileCollisionBox39.Init_CollisionBox_With_LevelMap(LevelMap, 3, 9);
+	TileCollisionBox39Bottom.Init_CollisionBox_With_LevelMap_And_OffsetX_And_OffsetY(LevelMap, 3, 9, 5, 20);
+	TileCollisionBox39Bottom.setHeight(TileCollisionBox39Bottom.getHeight() / 1.3);
+	TileCollisionBox39Bottom.setWidth(TileCollisionBox39Bottom.getWidth() / 1.3);
+
 	TileCollisionBox49.Init_CollisionBox_With_LevelMap(LevelMap, 4, 9);
 	TileCollisionBox57.Init_CollisionBox_With_LevelMap(LevelMap, 5, 7);
 	TileCollisionBox59.Init_CollisionBox_With_LevelMap(LevelMap, 5, 9);
@@ -519,12 +561,12 @@ void Game::Setup_LevelThreeCollision()
 	TileCollisionBox78.Init_CollisionBox_With_LevelMap(LevelMap, 7, 8);
 	TileCollisionBox79.Init_CollisionBox_With_LevelMap(LevelMap, 7, 9);
 	TileCollisionBox89.Init_CollisionBox_With_LevelMap(LevelMap, 8, 9);
-	TileCollisionBox211.Init_CollisionBox_With_LevelMap_And_OffsetX(LevelMap, 2, 11, 10);
 	TileCollisionBox417.Init_CollisionBox_With_LevelMap(LevelMap, 4, 17);
 	TileCollisionBox615.Init_CollisionBox_With_LevelMap(LevelMap, 6, 15);
 	TileCollisionBox616.Init_CollisionBox_With_LevelMap(LevelMap, 6, 16);
 	TileCollisionBox715.Init_CollisionBox_With_LevelMap(LevelMap, 7, 15);
 	TileCollisionBox716.Init_CollisionBox_With_LevelMap(LevelMap, 7, 16);
+	TileCollisionBox724.Init_CollisionBox_With_LevelMap(LevelMap, 7, 24);
 	TileCollisionBox810.Init_CollisionBox_With_LevelMap(LevelMap, 8, 10);
 	TileCollisionBox811.Init_CollisionBox_With_LevelMap(LevelMap, 8, 11);
 	TileCollisionBox812.Init_CollisionBox_With_LevelMap(LevelMap, 8, 12);
@@ -534,11 +576,9 @@ void Game::Setup_LevelThreeCollision()
 	if (coin17 != nullptr) {
 		Coin17_CollisionBox.Init_CollisionBox_With_Object(coin17);
 	}
-
 	if (coin44 != nullptr) {
 		Coin44_CollisionBox.Init_CollisionBox_With_Object(coin44);
 	}
-
 	if (coin47 != nullptr) {
 		Coin47_CollisionBox.Init_CollisionBox_With_Object(coin47);
 	}
@@ -557,6 +597,7 @@ void Game::LevelThreeCollision()
 {
 	Setup_LevelThreeCollision();
 	PlayerCollisionBox.CollisionCheck_PlayerAndTile_PlayerOnTop(TileCollisionBox39, player, LevelMap, 3, 9);
+	PlayerCollisionBox.CollisionCheck_PlayerAndTile_HitBlockForItem(TileCollisionBox39Bottom, player, redMushroom, LevelMap, BumpSound, 3, 9);
 	MovingFloorCollisionBox.CollisionCheck_ObjectAndTile_ObjectToRight(TileCollisionBox49, movingFloor, LevelMap, 4, 9);
 	PlayerCollisionBox.CollisionCheck_PlayerAndTile_ReleaseJumpRestriction(TileCollisionBox57, LevelMap, 5, 7);
 	PlayerCollisionBox.CollisionCheck_PlayerAndTile_JumpRestriction(TileCollisionBox59, LevelMap, 5, 9);
@@ -569,7 +610,6 @@ void Game::LevelThreeCollision()
 	PlayerCollisionBox.CollisionCheck_PlayerAndTile_PlayerToLeft(TileCollisionBox78, player, LevelMap, 7, 8);	
 	PlayerCollisionBox.CollisionCheck_PlayerAndTile_PlayerToRight(TileCollisionBox79, player, LevelMap, 7, 9);
 	PlayerCollisionBox.CollisionCheck_PlayerAndTile_StopFreeFall(TileCollisionBox89, LevelMap, 8, 9);
-	PlayerCollisionBox.CollisionCheck_PlayerAndTile_PlayerOnTop(TileCollisionBox211, player, LevelMap, 2, 11);
 	MovingFloorCollisionBox.CollisionCheck_ObjectAndTile_ObjectToLeft(TileCollisionBox417, movingFloor, LevelMap, 4, 17);
 	PlayerCollisionBox.CollisionCheck_PlayerAndObject_PlayerToTop(MovingFloorCollisionBox, player, movingFloor);
 	PlayerCollisionBox.CollisionCheck_PlayerAndTile_PlayerOnTop(TileCollisionBox615, player, LevelMap, 6, 15); // Pipe
@@ -577,12 +617,12 @@ void Game::LevelThreeCollision()
 	PlayerCollisionBox.CollisionCheck_PlayerAndTile_PlayerToLeft(TileCollisionBox715, player, LevelMap, 7, 15);
 	SpiderCollisionBox.CollisionCheck_EnemyAndTile_EnemyToRight(TileCollisionBox716, Spider1, LevelMap, 7, 16);
 	PlayerCollisionBox.CollisionCheck_PlayerAndTile_PlayerToRight(TileCollisionBox716, player, LevelMap, 7, 16);
+	PlayerCollisionBox.CollisionCheck_PlayerAndTile_ReleaseJumpRestriction(TileCollisionBox724, LevelMap, 7, 24);
 	PlayerCollisionBox.CollisionCheck_PlayerAndTile_FallingDeath(TileCollisionBox810, player, LevelMap, 8, 10);
 	PlayerCollisionBox.CollisionCheck_PlayerAndTile_FallingDeath(TileCollisionBox811, player, LevelMap, 8, 11);
 	PlayerCollisionBox.CollisionCheck_PlayerAndTile_FallingDeath(TileCollisionBox812, player, LevelMap, 8, 12);
 	PlayerCollisionBox.CollisionCheck_PlayerAndTile_FallingDeath(TileCollisionBox813, player, LevelMap, 8, 13);
-	PlayerCollisionBox.CollisionCheck_PlayerAndTile_FallingDeath(TileCollisionBox814, player, LevelMap, 8, 14);
-	
+	PlayerCollisionBox.CollisionCheck_PlayerAndTile_FallingDeath(TileCollisionBox814, player, LevelMap, 8, 14);	
 
 	if (coin17 != nullptr) {
 		PlayerCollisionBox.CollisionCheck_PlayerAndObject_CollectItem(Coin17_CollisionBox, player, coin17, coinCollectSound);
@@ -633,6 +673,7 @@ void Game::Setup_LevelFourCollision()
 	TileCollisionBox611.Init_CollisionBox_With_LevelMap(LevelMap, 6, 11);
 	TileCollisionBox711.Init_CollisionBox_With_LevelMap(LevelMap, 7, 11);
 	TileCollisionBox717.Init_CollisionBox_With_LevelMap_And_OffsetX(LevelMap, 7, 17, 8);
+	TileCollisionBox717.setWidth(TileCollisionBox717.getWidth() / 1.2);
 	TileCollisionBox717Left.Init_CollisionBox_With_LevelMap_And_OffsetX(LevelMap, 7, 17, -2);
 	TileCollisionBox717Left.setPosY(LevelMap->getTilePositionY(7, 17) + 10);
 	TileCollisionBox717Right.Init_CollisionBox_With_LevelMap(LevelMap, 7, 17);
@@ -647,7 +688,6 @@ void Game::LevelFourCollision()
 	PlayerCollisionBox.CollisionCheck_PlayerAndTile_PlayerToLeft(TileCollisionBox57Left, player, LevelMap, 5, 7);
 	PlayerCollisionBox.CollisionCheck_PlayerAndTile_PlayerToLeft(TileCollisionBox66Left, player, LevelMap, 6, 6);
 	PlayerCollisionBox.CollisionCheck_PlayerAndTile_PlayerToLeft(TileCollisionBox210Left, player, LevelMap, 2, 10);
-
 	SpiderCollisionBox.CollisionCheck_EnemyAndTile_EnemyToRight(TileCollisionBox717Right, Spider1, LevelMap, 7, 17);	
 	PlayerCollisionBox.CollisionCheck_PlayerAndTile_PlayerOnTop(TileCollisionBox39, player, LevelMap, 3, 9);
 	PlayerCollisionBox.CollisionCheck_PlayerAndTile_PlayerOnTop(TileCollisionBox48, player, LevelMap, 4, 8);
@@ -693,7 +733,6 @@ void Game::EnemyMovementAI()
 	{
 		isSpiderChasePlayer = true;
 	}
-
 	Spider1->Update();
 }
 
@@ -710,7 +749,6 @@ void Game::Update()
 
 	// Store the "previous" frame time
 	millisecsPreviousFrame = SDL_GetTicks();
-
 	
 	// Map1: Updating player and enemy on Map1
 	if (Game::playerFinishedMap1 == false)
@@ -721,18 +759,15 @@ void Game::Update()
 		star->Update();
 
 		coin17->Update();
-		if (coin44 != nullptr)		{
+		if (coin44 != nullptr){
 			coin44->Update();
-		}
-		
+		}		
 		if(coin47 != nullptr){
 			coin47->Update();
-		}
-		
-		if(coin71 != nullptr){			
+		}		
+		if (coin71 != nullptr) {
 			coin71->Update();
-		}	
-		
+		}
 		coin410->Update();
 		coin515->Update();
 
@@ -741,16 +776,30 @@ void Game::Update()
 			mushroom->setApplyGravity(true);
 			mushroom->moveToRight();
 		}
-
+		if (greenMushroom->getIsObjectAppears()) {
+			greenMushroom->setApplyGravity(true);
+			greenMushroom->moveToRight();
+		}
+		if (redMushroom->getIsObjectAppears()) {
+			redMushroom->setApplyGravity(true);
+			redMushroom->moveToRight();
+		}
+		if (mushroomGreen->getIsObjectAppears()) {
+			mushroomGreen->setApplyGravity(true);
+			mushroomGreen->moveToRight();
+		}
 		mushroom->Update();
 		greenMushroom->Update();
+		redMushroom->Update();
+		mushroomGreen->Update();
 
-		Game::EnemyMovementAI();	
+		Game::EnemyMovementAI();
 	}
 
 	// Loading Map 2: Map1 completed move on to map2. Player reached the end of windowWidth of map1
-	if (player->getPlayerPositionX() + player->getPlayerWidth() > Game::windowWidth && Game::playerFinishedMap1 == false)
-	{		
+	if (player->getPlayerPositionX() + player->getPlayerWidth() > Game::windowWidth &&
+		Game::playerFinishedMap1 == false)
+	{
 		SetupLevel2();
 		Game::playerFinishedMap1 = true;
 		LevelMap->Update();
@@ -768,7 +817,7 @@ void Game::Update()
 	{
 		player->Update(sdlEvent);
 		LevelTwoCollision();
-		
+
 		star->Falling(2.00);
 		star->Update();
 		Game::EnemyMovementAI();
@@ -778,21 +827,21 @@ void Game::Update()
 		{
 			movingFloor->moveToLeft();
 		}
-		else 
+		else
 		{
 			movingFloor->moveToRight();
-				
-		}		
+
+		}
 		movingFloor->Update();
 
 		if (Game::isFallFromSky == true && !player->getFallingAnimationStatus())
-		{			
+		{
 			player->setPlayerTexture("assets/player-falling-Sheet.png", 16, 16, 0, 0, 4, SDL_FLIP_NONE);
 			// Added flag to prevent recreating Falling Animation texture in a loop.
-			player->setFallingAnimationToTrue();			
+			player->setFallingAnimationToTrue();
 		}
-		if (Game::isFallFromSky == true){
-			player->Falling(Game::fGravityDeathFalling);			
+		if (Game::isFallFromSky == true) {
+			player->Falling(Game::fGravityDeathFalling);
 		}
 
 		coin17->Update();
@@ -810,6 +859,27 @@ void Game::Update()
 
 		coin410->Update();
 		coin515->Update();
+
+		if (mushroom->getIsObjectAppears())
+		{
+			mushroom->setApplyGravity(true);
+			mushroom->moveToRight();
+		}
+		mushroom->Update();
+			
+		if(greenMushroom->getIsObjectAppears()) 
+		{
+			greenMushroom->setApplyGravity(true);
+			greenMushroom->moveToRight();
+		}
+		greenMushroom->Update();
+		
+		if (redMushroom->getIsObjectAppears())
+		{
+			redMushroom->setApplyGravity(true);
+			redMushroom->moveToRight();
+		}
+		redMushroom->Update();
 	}
 
 	// Loading Map 3: map2 completed move on to map3. Player reached the end of windowWidth of map2
@@ -829,7 +899,8 @@ void Game::Update()
 	}
 
 	// Map3: Updating player and enemy on Map3
-	if (Game::playerFinishedMap3 == false && Game::playerFinishedMap2 == true && Game::playerFinishedMap1 == true )
+	if (Game::playerFinishedMap3 == false && Game::playerFinishedMap2 == true && 
+		Game::playerFinishedMap1 == true )
 	{
 		player->Update(sdlEvent);
 		LevelThreeCollision();
@@ -868,9 +939,15 @@ void Game::Update()
 		if (coin71 != nullptr) {
 			coin71->Update();
 		}
-
 		coin410->Update();
 		coin515->Update();
+		
+		if (redMushroom->getIsObjectAppears())
+		{
+			redMushroom->setApplyGravity(true);
+			redMushroom->moveToRight();
+		}
+		redMushroom->Update();		
 
 	}
 
@@ -905,7 +982,8 @@ void Game::Update()
 	}
 
 	// Loading Map1: map4 completed return to map1. Player reached the end of windowWidth of map4
-	if (player->getPlayerPositionX() + player->getPlayerWidth() > Game::windowWidth && Game::playerFinishedMap1 == true && Game::playerFinishedMap2 == true && Game::playerFinishedMap3 == true && Game::playerFinishedMap4 == false)
+	if (player->getPlayerPositionX() + player->getPlayerWidth() > Game::windowWidth && Game::playerFinishedMap1 == true && 
+		Game::playerFinishedMap2 == true && Game::playerFinishedMap3 == true && Game::playerFinishedMap4 == false)
 	{
 		SetupLevel1();
 		Game::playerFinishedMap4 = true;
@@ -924,7 +1002,6 @@ void Game::Update()
 
 void Game::Render()
 {
-
 	// Map1: Render Entities and Objects on Map1
 	if (Game::playerFinishedMap1 == false)
 	{	
@@ -947,7 +1024,6 @@ void Game::Render()
 		}
 		SDL_Rect textRect = { 0, 491, texW, texH };
 
-
 		SDL_RenderClear(GameRenderer);
 		SDL_RenderCopy(GameRenderer, mBackground, NULL, &backgroundRect);
 		LevelMap->Render();
@@ -962,7 +1038,9 @@ void Game::Render()
 			TileCollisionBox54.Render();
 			TileCollisionBox54Bottom.Render();	
 			TileCollisionBox57.Render();
+			TileCollisionBox57Bottom.Render();
 			TileCollisionBox510.Render();
+			TileCollisionBox510Bottom.Render();
 			TileCollisionBox73.Render();
 			TileCollisionBox74.Render();
 			TileCollisionBox75.Render();
@@ -975,24 +1053,6 @@ void Game::Render()
 			TileCollisionBox715.Render();
 			TileCollisionBox716.Render();
 			
-			if(coin17 != nullptr){
-				Coin17_CollisionBox.Render();
-			}
-			if (coin44 != nullptr) {
-				Coin44_CollisionBox.Render();
-			}
-			if(coin47 != nullptr){
-				Coin47_CollisionBox.Render();
-			}
-			if (coin71 != nullptr){
-				Coin71_CollisionBox.Render();
-			}
-			if(coin410 != nullptr){
-				Coin410_CollisionBox.Render();
-			}
-			if(coin515 != nullptr){
-				Coin515_CollisionBox.Render();
-			}
 			//ImGUI
 			//myDebugGUI.DebugInput();
 			//myDebugGUI.RenderDebugDemo();
@@ -1006,8 +1066,7 @@ void Game::Render()
 		}		
 		if (!coin47->getIsObjectCollected()) {
 			coin47->Render();
-		}
-		
+		}		
 		if (!coin71->getIsObjectCollected())
 		{
 			coin71->Render();
@@ -1030,6 +1089,16 @@ void Game::Render()
 			greenMushroom->Render();
 		}
 
+		if (redMushroom->getIsObjectAppears())
+		{
+			redMushroom->Render();
+		}
+
+		if (mushroomGreen->getIsObjectAppears())
+		{
+			mushroomGreen->Render();
+		}
+
 		star->Render();
 		Spider1->Render();	
 		player->Render();
@@ -1037,10 +1106,9 @@ void Game::Render()
 		playerScore->UpdateScoreSystem();
 		playerScore->DrawScoreBox();
 		SDL_RenderCopy(GameRenderer, textTexture, NULL, &textRect);
-		SDL_DestroyTexture(textTexture);
+		SDL_DestroyTexture(textTexture);		
 		
 		SDL_RenderPresent(GameRenderer);
-
 	}
 
 	// Map2: Render Entities and Objects on Map2
@@ -1056,6 +1124,7 @@ void Game::Render()
 			MovingFloorCollisionBox.Render();
 			SpiderCollisionBox.Render();
 			TileCollisionBox55.Render();
+			TileCollisionBox55Bottom.Render();
 			TileCollisionBox70.Render();
 			TileCollisionBox74.Render();
 			TileCollisionBox75.Render();	
@@ -1067,11 +1136,13 @@ void Game::Render()
 			TileCollisionBox88.Render();	
 			TileCollisionBox89.Render();						
 			TileCollisionBox216.Render();
+			TileCollisionBox216Bottom.Render();
 			TileCollisionBox414.Render();
 			TileCollisionBox416.Render();
 			TileCollisionBox418.Render();
 			TileCollisionBox515.Render();
 			TileCollisionBox516.Render();
+			TileCollisionBox516Bottom.Render();
 			TileCollisionBox517.Render();
 			TileCollisionBox714.Render();
 			TileCollisionBox715.Render();
@@ -1106,6 +1177,19 @@ void Game::Render()
 			coin515->Render();
 		}
 
+		if (mushroom->getIsObjectAppears())
+		{
+			mushroom->Render();
+		}
+		if (greenMushroom->getIsObjectAppears())
+		{
+			greenMushroom->Render();
+		}
+		if (redMushroom->getIsObjectAppears())
+		{
+			redMushroom->Render();
+		}
+
 		movingFloor->Render();
 		star->Render();
 		Spider1->Render();
@@ -1131,6 +1215,7 @@ void Game::Render()
 			MovingFloorCollisionBox.Render();
 			SpiderCollisionBox.Render();	
 			TileCollisionBox39.Render();
+			TileCollisionBox39Bottom.Render();
 			TileCollisionBox49.Render();
 			TileCollisionBox57.Render();	
 			TileCollisionBox59.Render();
@@ -1143,12 +1228,12 @@ void Game::Render()
 			TileCollisionBox78.Render();
 			TileCollisionBox79.Render();	
 			TileCollisionBox89.Render();
-			TileCollisionBox211.Render();
 			TileCollisionBox417.Render();
 			TileCollisionBox615.Render();	
 			TileCollisionBox616.Render();	
 			TileCollisionBox715.Render();	
 			TileCollisionBox716.Render();
+			TileCollisionBox724.Render();
 			TileCollisionBox810.Render();
 			TileCollisionBox811.Render();
 			TileCollisionBox812.Render();
@@ -1176,6 +1261,11 @@ void Game::Render()
 		}
 		if (!coin515->getIsObjectCollected()) {
 			coin515->Render();
+		}
+
+		if (redMushroom->getIsObjectAppears())
+		{
+			redMushroom->Render();
 		}
 
 		star->Render();
@@ -1235,8 +1325,7 @@ void Game::Render()
 		playerScore->DrawScoreBox();
 
 		SDL_RenderPresent(GameRenderer);
-	}
-		
+	}		
 }
 
 void Game::CleanUP()
@@ -1295,7 +1384,11 @@ void Game::CleanUP()
 	mushroom = nullptr;
 	delete greenMushroom;
 	greenMushroom = nullptr;
-	
+	delete redMushroom;
+	redMushroom = nullptr;
+	delete mushroomGreen;
+	mushroomGreen = nullptr;
+
    	SDL_Quit();
 		
 	printf("\033[1;35mCleaning Data is Complete!\n \x1b[0m");
