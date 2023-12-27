@@ -33,7 +33,6 @@ ScoreSystem::~ScoreSystem()
 {	
 	if (m_TextTexture != NULL){
 		SDL_DestroyTexture(m_TextTexture);
-		SDL_FreeSurface(m_TextSurface);
 		m_TextSurface = NULL;
 	}
 	
