@@ -86,8 +86,8 @@ private:
     SDL_Event sdlEvent;
     
 
-    const Uint16 SCREEN_WIDTH = 1280;
-    const Uint16 SCREEN_HEIGHT = 768;
+    const Uint16 SCREEN_WIDTH = 1200;
+    const Uint16 SCREEN_HEIGHT = 700;
     bool isDebug = false;
     bool mGameIsRunning = false;
     bool isSpiderChasePlayer = true;
